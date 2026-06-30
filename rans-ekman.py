@@ -28,7 +28,7 @@ Hekman = np.sqrt(2.0 * Kmodel.K0 / f)
 
 Kmodel = Ktheory.Kmodel(lm_outer=Hekman)  # redefine with outer scale to Ekman height
 Kt = Kmodel.constant  # define turbulence model
-tag = "constant"  # tags in postprocessing files
+tag = "other"  # tags in postprocessing files
 
 # check whether computational domain is larger than Ekman height
 print("Thickness of Ekman layer {:3.2f} km.".format(Hekman / 1000.0))
@@ -54,8 +54,8 @@ def preprocessing():
     # Construct initial state vector (initial condition)
     K0_ini = Kmodel.K0  # change to study a transient
     H_ini = np.sqrt(2.0 * K0_ini / f)  # initial Ekman thickness
-    u, v = ug * Ekman(z / H_ini)[0], ug * Ekman(z / H_ini)[1]
-    # u, v = ug * special.erf(z / H_ini), np.zeros_like(z)
+    # u, v = ug * Ekman(z / H_ini)[0], ug * Ekman(z / H_ini)[1]
+    u, v = ug * special.erf(z / H_ini), np.zeros_like(z)
 
     # tke[:] = 0.
     tke = (
@@ -87,7 +87,7 @@ def postprocessing(z, data):
     axs[0].plot(uref, z / 1000.0, "k", label=r"Ekman solution")
     axs[1].plot(vref, z / 1000.0, "k", label=r"Ekman solution")
     #
-    fig.savefig("rans-ekman-" + tag + "-1.pdf", bbox_inches="tight")
+    fig.savefig("rans-ekman-" + tag + "-time_height_velocity.png", bbox_inches="tight")
 
     fig, axs = PlotHovmoeller(z, data)
     # additional information
@@ -95,14 +95,14 @@ def postprocessing(z, data):
         axs[0].plot((ti, ti), (z[0] / 1000.0, z[-1] / 1000.0), "k")
         axs[1].plot((ti, ti), (z[0] / 1000.0, z[-1] / 1000.0), "k")
     #
-    fig.savefig("rans-ekman-" + tag + "-2.pdf", bbox_inches="tight")
+    fig.savefig("rans-ekman-" + tag + "-stream_span_velocity.png", bbox_inches="tight")
 
     fig, ax = PlotHodograph(z, data)
     # additional information
     ax.plot(uref, vref, "k", label=r"Ekman solution")
     ax.legend(loc="best")
     #
-    fig.savefig("rans-ekman-" + tag + "-3.pdf", bbox_inches="tight")
+    fig.savefig("rans-ekman-" + tag + "-stream_v_span.png", bbox_inches="tight")
 
     plt.show()
 
@@ -135,3 +135,5 @@ if __name__ == "__main__":
     data = simulation(z, state)
     # save(x, data)
     postprocessing(z, data)
+    # fig.savefig('figs/', postprocessing)
+
