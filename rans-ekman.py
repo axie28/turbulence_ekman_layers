@@ -113,6 +113,10 @@ def Rhs(t, state):
     v = state[nz : 2 * nz]
     tke = state[2 * nz : 3 * nz]
 
+    dudz = np.gradient(u, z)
+    dvdz = np.gradient(v, z)
+    S = np.sqrt(dudz ** 2 + dvdz ** 2)  # shear calculation
+
     Kt_loc, lm_loc = Kt(z=z, vel=(u, v), tke=tke, time=t)
     Ruw = Kt_loc * np.gradient(u, z)  # Reynolds stresses
     Rvw = Kt_loc * np.gradient(v, z)
