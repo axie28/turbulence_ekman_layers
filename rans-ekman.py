@@ -27,8 +27,8 @@ Kmodel = Ktheory.Kmodel()
 Hekman = np.sqrt(2.0 * Kmodel.K0 / f)
 
 Kmodel = Ktheory.Kmodel(lm_outer=Hekman)  # redefine with outer scale to Ekman height
-Kt = Kmodel.constant  # define turbulence model
-tag = "constant"  # tags in postprocessing files
+Kt = Kmodel.Blackadar  # define turbulence model
+tag = "Blackadar"  # tags in postprocessing files
 
 # check whether computational domain is larger than Ekman height
 print("Thickness of Ekman layer {:3.2f} km.".format(Hekman / 1000.0))
