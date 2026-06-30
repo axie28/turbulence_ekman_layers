@@ -27,8 +27,8 @@ Kmodel = Ktheory.Kmodel()
 Hekman = np.sqrt(2.0 * Kmodel.K0 / f)
 
 Kmodel = Ktheory.Kmodel(lm_outer=Hekman)  # redefine with outer scale to Ekman height
-Kt = Kmodel.Blackadar  # define turbulence model
-tag = "Blackadar"  # tags in postprocessing files
+Kt = Kmodel.constant  # define turbulence model
+tag = "constant"  # tags in postprocessing files
 
 # check whether computational domain is larger than Ekman height
 print("Thickness of Ekman layer {:3.2f} km.".format(Hekman / 1000.0))
@@ -113,28 +113,13 @@ def Rhs(t, state):
     v = state[nz : 2 * nz]
     tke = state[2 * nz : 3 * nz]
 
-    dudz = np.gradient(u, z)
-    dvdz = np.gradient(v, z)
-    S = np.sqrt(dudz ** 2 + dvdz ** 2)  # shear calculation
-
     Kt_loc, lm_loc = Kt(z=z, vel=(u, v), tke=tke, time=t)
     Ruw = Kt_loc * np.gradient(u, z)  # Reynolds stresses
     Rvw = Kt_loc * np.gradient(v, z)
 
     du_dt = np.gradient(Ruw, z) + f * v
     dv_dt = np.gradient(Rvw, z) - f * (u - ug)
-    #dk_dt = np.full_like(z, 0.0)  # to be done
-
-    P = Kt_loc * S**2 #production term
-
-    c = 0.55
-    cD = c**3
-    eps = cD * (tke**(3/2)/np.maximum(lm_loc, 1e-6)) #dissipation term
-
-    dk_dz = np.gradient(tke,z)
-    diff = np.gradient(Kt_loc * dk_dz, z)
-
-    dk_dt = P - eps + diff
+    dk_dt = np.full_like(z, 0.0)  # to be done
 
     # no-slip boundary conditions
     du_dt[0], du_dt[-1] = 0.0, 0.0
@@ -148,5 +133,5 @@ def Rhs(t, state):
 if __name__ == "__main__":
     z, state = preprocessing()
     data = simulation(z, state)
-     # save(x, data)
+    # save(x, data)
     postprocessing(z, data)

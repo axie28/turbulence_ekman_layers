@@ -5,11 +5,12 @@ import numpy as np
 
 class Kmodel:
     K0 = 5.0  # m^2 /s, default turbulent viscosity
-    lm0 = 5.0  # m, default mixing length
+    lm0 = 5.0 # m, default mixing length
     z0 = 5.0  # m, roughness length for near-surface regularization
+    # b_layer = 300 # m, boundary layer
     # tau = 3600.0 * 4.0  # transient, if any
 
-    def __init__(self, lm_outer=10.0 * lm0):
+    def __init__(self, lm_outer=10.0 * lm0): 
         self.lm_outer = lm_outer  # outer scale
         self.lm0 = 0.1 * self.lm_outer  # reference mixing length, m
 
@@ -19,9 +20,12 @@ class Kmodel:
     def constant(self, z, **kwargs):
         return np.full_like(z, self.K0), self.lm0
 
-    def stepwise(self, z, **kwargs):
-        print('to be done')
-        quit()
+    def stepwise(self, z, **kwargs): # strong stable conditions
+        K = np.empty_like(z)
+        K.fill(self.K0)
+        K[ z>self.lm_outer ] = 0
+        return K, self.lm0
+
 
     def Prandtl(self, z, vel, **kwargs):
         u, v = vel
