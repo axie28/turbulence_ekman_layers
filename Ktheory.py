@@ -49,5 +49,17 @@ class Kmodel:
 
 
     def Tke(self, z, vel, tke, **kwargs):
-        print('to be done')
-        quit()
+        #constants
+        c = 0.55
+        kappa = 0.41
+
+        lm_outer = 0.1 * self.lm_outer  # setting outer boundary assuming constant of c = 0.1
+        lm_inner = np.maximum(kappa * z, self.z0)  # inner boundary
+        lm = lm_outer * lm_inner / (lm_inner + lm_outer)  # blend outer and inner regions
+
+        Kt = c * lm * np.sqrt(np.maximum(tke, 1e-12))
+
+        nref = np.abs(z[:] - self.z0 / kappa).argmin()
+        Kt[:nref] = lm[:nref]**2 * np.sqrt(np.gradient(vel[0],z)[:nref]**2+np.gradient(vel[1],z)[:nref]**2) #near surface regularization
+
+        return Kt, lm
