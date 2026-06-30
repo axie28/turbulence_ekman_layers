@@ -1,0 +1,6 @@
+# ignore files
+*.pdf
+*.png
+
+# ignore folder
+figs/
