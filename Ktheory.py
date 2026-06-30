@@ -24,8 +24,12 @@ class Kmodel:
         quit()
 
     def Prandtl(self, z, vel, **kwargs):
-        print('to be done')
-        quit()
+        u, v = vel
+        dudz = np.gradient(u, z)
+        dvdz = np.gradient(v, z)
+        S = np.sqrt(dudz**2 + dvdz**2)  #shear calculation
+        Kt = self.lm0**2 * S  #Prandtl estimation of K constant
+        return Kt, self.lm0
 
     def Blackadar(self, z, vel, **kwargs):
         print('to be done')
