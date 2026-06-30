@@ -24,11 +24,12 @@ f = 1.0e-4  # Coriolis frequency, 1/s
 ug = 10.0  # geostrophic wind velocity, m/s
 
 Kmodel = Ktheory.Kmodel()
-Hekman = np.sqrt(2.0 * Kmodel.K0 / f)
+# Hekman = np.sqrt(2.0 * Kmodel.K0 / f)
+Hekman = 300.0
 
 Kmodel = Ktheory.Kmodel(lm_outer=Hekman)  # redefine with outer scale to Ekman height
-Kt = Kmodel.constant  # define turbulence model
-tag = "other"  # tags in postprocessing files
+Kt = Kmodel.stepwise  # define turbulence model
+tag = "300layer"  # tags in postprocessing files
 
 # check whether computational domain is larger than Ekman height
 print("Thickness of Ekman layer {:3.2f} km.".format(Hekman / 1000.0))
@@ -54,8 +55,8 @@ def preprocessing():
     # Construct initial state vector (initial condition)
     K0_ini = Kmodel.K0  # change to study a transient
     H_ini = np.sqrt(2.0 * K0_ini / f)  # initial Ekman thickness
-    # u, v = ug * Ekman(z / H_ini)[0], ug * Ekman(z / H_ini)[1]
-    u, v = ug * special.erf(z / H_ini), np.zeros_like(z)
+    u, v = ug * Ekman(z / H_ini)[0], ug * Ekman(z / H_ini)[1]
+    # u, v = ug * special.erf(z / H_ini), np.zeros_like(z)
 
     # tke[:] = 0.
     tke = (
