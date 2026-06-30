@@ -32,8 +32,21 @@ class Kmodel:
         return Kt, self.lm0
 
     def Blackadar(self, z, vel, **kwargs):
-        print('to be done')
-        quit()
+        u, v = vel
+        kappa = 0.41
+
+        lm_outer = 0.1 *self.lm_outer  #setting outer boundary assuming constant of c = 0.1
+        lm_inner = np.maximum(kappa * z, self.z0)  #inner boundary
+        lm = lm_outer * lm_inner / (lm_inner + lm_outer)  #blend outer and inner regions
+
+        dudz = np.gradient(u, z)
+        dvdz = np.gradient(v, z)
+        S = np.sqrt(dudz ** 2 + dvdz ** 2)  #shear calculation
+
+        Kt = lm**2 * S
+
+        return Kt, lm
+
 
     def Tke(self, z, vel, tke, **kwargs):
         print('to be done')
