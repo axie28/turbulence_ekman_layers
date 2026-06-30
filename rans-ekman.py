@@ -123,7 +123,18 @@ def Rhs(t, state):
 
     du_dt = np.gradient(Ruw, z) + f * v
     dv_dt = np.gradient(Rvw, z) - f * (u - ug)
-    dk_dt = np.full_like(z, 0.0)  # to be done
+    #dk_dt = np.full_like(z, 0.0)  # to be done
+
+    P = Kt_loc * S**2 #production term
+
+    c = 0.55
+    cD = c**3
+    eps = cD * (tke**(3/2)/np.maximum(lm_loc, 1e-6)) #dissipation term
+
+    dk_dz = np.gradient(tke,z)
+    diff = np.gradient(Kt_loc * dk_dz, z)
+
+    dk_dt = P - eps + diff
 
     # no-slip boundary conditions
     du_dt[0], du_dt[-1] = 0.0, 0.0
